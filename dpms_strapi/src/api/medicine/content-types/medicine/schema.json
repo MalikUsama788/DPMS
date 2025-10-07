@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "medicines",
+  "info": {
+    "singularName": "medicine",
+    "pluralName": "medicines",
+    "displayName": "Medicine"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "patient_prescriptions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::patient-prescription.patient-prescription",
+      "mappedBy": "medicine"
+    },
+    "medicine_type": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::medicine-type.medicine-type",
+      "inversedBy": "medicines"
+    },
+    "name": {
+      "type": "text"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "medicine_types",
+  "info": {
+    "singularName": "medicine-type",
+    "pluralName": "medicine-types",
+    "displayName": "MedicineType"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "medicines": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::medicine.medicine",
+      "mappedBy": "medicine_type"
+    }
+  }
+}

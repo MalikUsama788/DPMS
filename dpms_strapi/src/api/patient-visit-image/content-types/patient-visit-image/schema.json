@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "patient_visit_images",
+  "info": {
+    "singularName": "patient-visit-image",
+    "pluralName": "patient-visit-images",
+    "displayName": "PatientVisitImage"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "url": {
+      "type": "text"
+    },
+    "patient_visit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::patient-visit.patient-visit",
+      "inversedBy": "patient_visit_images"
+    }
+  }
+}

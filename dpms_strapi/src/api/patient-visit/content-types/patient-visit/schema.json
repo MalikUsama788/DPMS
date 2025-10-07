@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "patient_visits",
+  "info": {
+    "singularName": "patient-visit",
+    "pluralName": "patient-visits",
+    "displayName": "PatientVisit"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "date_of_visit": {
+      "type": "date"
+    },
+    "follow_up_date": {
+      "type": "date"
+    },
+    "symptoms": {
+      "type": "text"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "patient_visit_images": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::patient-visit-image.patient-visit-image",
+      "mappedBy": "patient_visit"
+    },
+    "patient_prescriptions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::patient-prescription.patient-prescription",
+      "mappedBy": "patient_visit"
+    },
+    "patient": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::patient.patient",
+      "inversedBy": "patient_visits"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "patient_visits"
+    }
+  }
+}

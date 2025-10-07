@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "patient_prescriptions",
+  "info": {
+    "singularName": "patient-prescription",
+    "pluralName": "patient-prescriptions",
+    "displayName": "PatientVisitPrescription"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medicine": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::medicine.medicine",
+      "inversedBy": "patient_prescriptions"
+    },
+    "patient_visit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::patient-visit.patient-visit",
+      "inversedBy": "patient_prescriptions"
+    }
+  }
+}
