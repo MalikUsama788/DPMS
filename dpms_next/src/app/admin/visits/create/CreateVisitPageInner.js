@@ -343,7 +343,7 @@ function CreateVisitPage() {
     if (images.length + compressedImages.length <= 5) {
       setImages((prev) => [...prev, ...compressedImages]);
     } else {
-      toast.info("Max 5 images allowed");
+      toast.info("Max 5 images allowed. No images were added.");
     }
   };
 
