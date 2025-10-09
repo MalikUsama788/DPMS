@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import { decodeSessionData } from "@/utils/session"; 
 import Select from "react-select";
 import imageCompression from "browser-image-compression";
@@ -17,6 +18,7 @@ function CreateVisitPage() {
   const [userData, setUserData] = useState(null);
   const [userDocumentId, setUserDocumentId] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const searchParams = useSearchParams();
   const visitId = searchParams.get("visitId"); 
@@ -77,6 +79,7 @@ function CreateVisitPage() {
   // Fetch Visit Details if visitId is present
   useEffect(() => {
     const fetchVisitDetails = async () => {
+      setLoading(true);
       if (!visitId || !accessToken) return;
   
       try {
@@ -145,6 +148,8 @@ function CreateVisitPage() {
         
       } catch (err) {
         toast.error("Failed to load visit details: " + (err.message || "Unknown error"));
+      } finally {
+        setLoading(false);
       }
     };
   
@@ -154,6 +159,8 @@ function CreateVisitPage() {
   // Fetch Patients and Medicines for dropdowns
   useEffect(() => {
     const fetchPatients = async () => {
+      setLoading(true);
+
       try {
         const res = await axios.get("/api/patients/get", {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -170,10 +177,14 @@ function CreateVisitPage() {
         ]);
       } catch (err) {
         toast.error("Failed to load patients: " + (err.response?.data?.error || "Unknown error"));
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchMedicines = async () => {
+      setLoading(true);
+
       try {
         const res = await axios.get("/api/medicines/get", {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -189,6 +200,8 @@ function CreateVisitPage() {
         );
       } catch (err) {
         toast.error("Failed to load medicines: " + (err.response?.data?.error || "Unknown error"));
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -251,6 +264,8 @@ function CreateVisitPage() {
 
   // Add or Update Patient in Database
   const handleUpdateDatabase = async () => {
+    setLoading(true);
+
     try {
       if (
         !patient.name ||
@@ -316,6 +331,8 @@ function CreateVisitPage() {
       return selected.documentId;
     } catch (err) {
       toast.error("Error saving patient: " + (err.message || "Unknown error"));
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -350,7 +367,8 @@ function CreateVisitPage() {
   // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
+    
     try {
       if (!visit.date_of_visit || !visit.notes) {
         toast.error("Visit Date, Followup Date, Symptoms and Notes are required!");
@@ -457,12 +475,21 @@ function CreateVisitPage() {
       router.push("/admin/visits/list");
     } catch (err) {
       toast.error("Error saving visit: " + (err.message || "Unknown error"));
+    } finally {
+      setLoading(false);
     }
   };
   
   // Check Session
-  if (checkingSession) {
-    return <div className="p-6">Checking Session...</div>;
+  if (checkingSession || loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
+        <ClipLoader size={50} color={"#3b82f6"} loading={true} />
+        <p className="mt-4 text-black text-lg font-semibold">
+          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+        </p>
+      </div>
+    );
   }
 
   return (

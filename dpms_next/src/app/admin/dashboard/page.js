@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import { decodeSessionData } from "@/utils/session";
 import Table from "@/components/ui/Table";
 
@@ -13,7 +14,8 @@ export default function PatientsListPage() {
   const [accessToken, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
-
+  const [loading, setLoading] = useState(false);
+  
   const [patients, setPatients] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -41,6 +43,7 @@ export default function PatientsListPage() {
   // Get Patients List
   useEffect(() => {
     const fetchPatients = async () => {
+      setLoading(true);
       if (!accessToken) return;
 
       try {
@@ -52,6 +55,8 @@ export default function PatientsListPage() {
         setTotal(res.data.total || 0);
       } catch (err) {
         toast.error("Error fetching patients: " + err.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPatients();
@@ -64,6 +69,8 @@ export default function PatientsListPage() {
 
   // Change Patient Status
   const handleStatusChange = async (patient) => { 
+    setLoading(true);
+
     const currentStatus = patient.patient_status;
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     if (!confirm(`Are you sure you want to change status to "${newStatus}" for ${patient.name}?`)) return;
@@ -88,11 +95,14 @@ export default function PatientsListPage() {
       toast.success(`Patient status updated to "${newStatus}" successfully`);
     } catch (err) {
       toast.error("Error updating patient: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Delete Patient
   const handleDelete = async (id) => {
+    setLoading(true);
     if (!confirm("Are you sure you want to delete this patient?")) return;
   
     try {
@@ -105,12 +115,21 @@ export default function PatientsListPage() {
       setTotal((prev) => prev - 1);
     } catch (err) {
       toast.error("Error deleting patient: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Check Session
-  if (checkingSession) {
-    return <div className="p-6">Checking Session...</div>;
+  if (checkingSession || loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
+        <ClipLoader size={50} color={"#3b82f6"} loading={true} />
+        <p className="mt-4 text-black text-lg font-semibold">
+          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+        </p>
+      </div>
+    );
   }
   
   return (

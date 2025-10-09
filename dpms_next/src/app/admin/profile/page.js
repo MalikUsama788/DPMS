@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import { saveEncodedDataToSession, decodeSessionData } from "@/utils/session";
 
 export default function ProfilePage() {
@@ -12,6 +13,7 @@ export default function ProfilePage() {
   const [accessToken, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -46,6 +48,8 @@ export default function ProfilePage() {
   // Submit Profile update
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const res = await axios.put(
         "/api/profile",
@@ -72,12 +76,21 @@ export default function ProfilePage() {
       toast.success("Profile updated successfully!");
     } catch (err) {
       toast.error("Error updating profile: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Check Session
-  if (checkingSession) {
-    return <p className="text-center mt-6">Loading profile...</p>;
+  if (checkingSession || loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
+        <ClipLoader size={50} color={"#3b82f6"} loading={true} />
+        <p className="mt-4 text-black text-lg font-semibold">
+          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+        </p>
+      </div>
+    );
   }
 
   return (

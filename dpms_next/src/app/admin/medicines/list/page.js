@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import { decodeSessionData } from "@/utils/session"; 
 import Table from "@/components/ui/Table";
 
@@ -13,6 +14,7 @@ export default function MedicinesListPage() {
   const [accessToken, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [medicines, setMedicines] = useState([]);
   const [types, setTypes] = useState([]);
@@ -46,6 +48,7 @@ export default function MedicinesListPage() {
   // Get Medicines List
   useEffect(() => {
     const fetchMedicines = async () => {
+      setLoading(true);
       if (!accessToken) return;
 
       try {
@@ -58,6 +61,8 @@ export default function MedicinesListPage() {
         setTypes(res.data.types || []);
       } catch (err) {
         toast.error("Error fetching medicines: ", err.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMedicines();
@@ -65,6 +70,8 @@ export default function MedicinesListPage() {
 
   // Save Medicine (Create or Update)
   const handleSave = async () => {
+    setLoading(true);
+
     if (!medicine.name || !medicine.type) {
       toast.error("Please fill all fields");
       return;
@@ -102,6 +109,8 @@ export default function MedicinesListPage() {
       setPage(1);
     } catch (err) {
       toast.error("Error saving medicine: ", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,6 +127,7 @@ export default function MedicinesListPage() {
 
   // Delete Medicine
   const handleDelete = async (id) => {
+    setLoading(true);
     if (!confirm("Are you sure you want to delete this medicine?")) return;
 
     try {
@@ -129,12 +139,21 @@ export default function MedicinesListPage() {
       setTotal((prev) => prev - 1);
     } catch (err) {
       toast.error("Error deleting medicine: " + err.message)
+    } finally {
+      setLoading(false);
     }
   };
 
   // Check Session
-  if (checkingSession) {
-    return <div className="p-6">Checking Session...</div>;
+  if (checkingSession || loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
+        <ClipLoader size={50} color={"#3b82f6"} loading={true} />
+        <p className="mt-4 text-black text-lg font-semibold">
+          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+        </p>
+      </div>
+    );
   }
   
   return (

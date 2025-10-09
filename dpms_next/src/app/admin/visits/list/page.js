@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import { decodeSessionData } from "@/utils/session";
 import Table from "@/components/ui/Table";
 
@@ -13,6 +14,7 @@ export default function VisitsListPage() {
   const [accessToken, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [visits, setVisits] = useState([]);
   const [page, setPage] = useState(1);
@@ -43,6 +45,7 @@ export default function VisitsListPage() {
   // Get Visits List
   useEffect(() => {
     const fetchVisits = async () => {
+      setLoading(true);
       if (!accessToken) return;
 
       try {
@@ -54,6 +57,8 @@ export default function VisitsListPage() {
         setTotal(res.data.total || 0);
       } catch (err) {
         toast.error("Error fetching visits: " + err.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchVisits();
@@ -66,6 +71,7 @@ export default function VisitsListPage() {
 
   // Delete Visit
   const handleDelete = async (id) => {
+    setLoading(true);
     if (!confirm("Are you sure you want to delete this visit?")) return;
 
     try {
@@ -77,12 +83,21 @@ export default function VisitsListPage() {
       setTotal((prev) => prev - 1);
     } catch (err) {
       toast.error("Error deleting visit: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Check Session
-  if (checkingSession) {
-    return <div className="p-6">Checking Session...</div>;
+  if (checkingSession || loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
+        <ClipLoader size={50} color={"#3b82f6"} loading={true} />
+        <p className="mt-4 text-black text-lg font-semibold">
+          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+        </p>
+      </div>
+    );
   }
 
   return (

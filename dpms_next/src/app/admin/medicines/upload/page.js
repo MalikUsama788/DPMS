@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import { decodeSessionData } from "@/utils/session"; 
 
 export default function UploadMedicinesPage() {
@@ -54,6 +55,7 @@ export default function UploadMedicinesPage() {
   // Handle File Upload
   const handleUpload = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setResult(null);
 
     if (!file) {
@@ -61,7 +63,6 @@ export default function UploadMedicinesPage() {
       return;
     }
 
-    setLoading(true);
     try {
       const text = await file.text();
       const medicinesData = parseCSV(text);
@@ -88,8 +89,15 @@ export default function UploadMedicinesPage() {
   };
   
   // Check Session
-  if (checkingSession) {
-    return <div className="p-6">Checking Session...</div>;
+  if (checkingSession || loading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
+        <ClipLoader size={50} color={"#3b82f6"} loading={true} />
+        <p className="mt-4 text-black text-lg font-semibold">
+          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+        </p>
+      </div>
+    );
   }
 
   return (
