@@ -48,7 +48,6 @@ export default function MedicinesListPage() {
   // Get Medicines List
   useEffect(() => {
     const fetchMedicines = async () => {
-      setLoading(true);
       if (!accessToken) return;
 
       try {
@@ -61,8 +60,6 @@ export default function MedicinesListPage() {
         setTypes(res.data.types || []);
       } catch (err) {
         toast.error("Error fetching medicines: ", err.message);
-      } finally {
-        setLoading(false);
       }
     };
     fetchMedicines();

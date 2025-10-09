@@ -43,7 +43,6 @@ export default function PatientsListPage() {
   // Get Patients List
   useEffect(() => {
     const fetchPatients = async () => {
-      setLoading(true);
       if (!accessToken) return;
 
       try {
@@ -55,8 +54,6 @@ export default function PatientsListPage() {
         setTotal(res.data.total || 0);
       } catch (err) {
         toast.error("Error fetching patients: " + err.message);
-      } finally {
-        setLoading(false);
       }
     };
     fetchPatients();

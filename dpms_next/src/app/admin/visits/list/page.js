@@ -45,7 +45,6 @@ export default function VisitsListPage() {
   // Get Visits List
   useEffect(() => {
     const fetchVisits = async () => {
-      setLoading(true);
       if (!accessToken) return;
 
       try {
@@ -57,8 +56,6 @@ export default function VisitsListPage() {
         setTotal(res.data.total || 0);
       } catch (err) {
         toast.error("Error fetching visits: " + err.message);
-      } finally {
-        setLoading(false);
       }
     };
     fetchVisits();
