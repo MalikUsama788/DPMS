@@ -48,8 +48,8 @@ export default function ProfilePage() {
   // Submit Profile update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
+    setLoading(true);
     try {
       const res = await axios.put(
         "/api/profile",

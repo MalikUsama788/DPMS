@@ -68,9 +68,9 @@ export default function VisitsListPage() {
 
   // Delete Visit
   const handleDelete = async (id) => {
-    setLoading(true);
     if (!confirm("Are you sure you want to delete this visit?")) return;
 
+    setLoading(true);
     try {
       await axios.delete(`/api/patient-visits/${id}`, {
         headers: { Authorization: `Bearer ${accessToken}` },

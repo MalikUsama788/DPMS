@@ -66,12 +66,11 @@ export default function PatientsListPage() {
 
   // Change Patient Status
   const handleStatusChange = async (patient) => { 
-    setLoading(true);
-
     const currentStatus = patient.patient_status;
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     if (!confirm(`Are you sure you want to change status to "${newStatus}" for ${patient.name}?`)) return;
 
+    setLoading(true);
     try {
       await axios.put(
         `/api/patients/${patient.documentId}`,
@@ -99,9 +98,9 @@ export default function PatientsListPage() {
 
   // Delete Patient
   const handleDelete = async (id) => {
-    setLoading(true);
     if (!confirm("Are you sure you want to delete this patient?")) return;
   
+    setLoading(true);
     try {
       await axios.delete(`/api/patients/${id}`, {
         headers: { Authorization: `Bearer ${accessToken}` },

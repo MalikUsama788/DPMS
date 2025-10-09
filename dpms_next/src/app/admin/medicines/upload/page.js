@@ -55,7 +55,6 @@ export default function UploadMedicinesPage() {
   // Handle File Upload
   const handleUpload = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setResult(null);
 
     if (!file) {
@@ -63,6 +62,7 @@ export default function UploadMedicinesPage() {
       return;
     }
 
+    setLoading(true);
     try {
       const text = await file.text();
       const medicinesData = parseCSV(text);

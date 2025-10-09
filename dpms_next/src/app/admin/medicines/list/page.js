@@ -67,13 +67,12 @@ export default function MedicinesListPage() {
 
   // Save Medicine (Create or Update)
   const handleSave = async () => {
-    setLoading(true);
-
     if (!medicine.name || !medicine.type) {
       toast.error("Please fill all fields");
       return;
     }
 
+    setLoading(true);
     try {
       if (isEditing && medicine.id) {
         // Update
@@ -124,9 +123,9 @@ export default function MedicinesListPage() {
 
   // Delete Medicine
   const handleDelete = async (id) => {
-    setLoading(true);
     if (!confirm("Are you sure you want to delete this medicine?")) return;
 
+    setLoading(true);
     try {
       await axios.delete(`/api/medicines/${id}`, {
         headers: { Authorization: `Bearer ${accessToken}` },

@@ -79,9 +79,9 @@ function CreateVisitPage() {
   // Fetch Visit Details if visitId is present
   useEffect(() => {
     const fetchVisitDetails = async () => {
-      setLoading(true);
       if (!visitId || !accessToken) return;
   
+      setLoading(true);
       try {
         const res = await axios.get(`/api/patient-visits/${visitId}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -160,7 +160,6 @@ function CreateVisitPage() {
   useEffect(() => {
     const fetchPatients = async () => {
       setLoading(true);
-
       try {
         const res = await axios.get("/api/patients/get", {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -184,7 +183,6 @@ function CreateVisitPage() {
 
     const fetchMedicines = async () => {
       setLoading(true);
-
       try {
         const res = await axios.get("/api/medicines/get", {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -265,7 +263,6 @@ function CreateVisitPage() {
   // Add or Update Patient in Database
   const handleUpdateDatabase = async () => {
     setLoading(true);
-
     try {
       if (
         !patient.name ||
@@ -368,7 +365,6 @@ function CreateVisitPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
     try {
       if (!visit.date_of_visit || !visit.notes) {
         toast.error("Visit Date, Followup Date, Symptoms and Notes are required!");
