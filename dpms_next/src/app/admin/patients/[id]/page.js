@@ -81,7 +81,7 @@ export default function PatientDetailsPage() {
   };
 
   // Check Session
-  if (checkingSession || loading) {
+  if (checkingSession || loading || !patient) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
         <ClipLoader size={50} color={"#3b82f6"} loading={true} />

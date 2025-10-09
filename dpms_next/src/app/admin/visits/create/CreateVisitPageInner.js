@@ -364,7 +364,7 @@ function CreateVisitPage() {
   // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
     try {
       if (!visit.date_of_visit || !visit.notes) {
         toast.error("Visit Date, Followup Date, Symptoms and Notes are required!");
@@ -373,7 +373,8 @@ function CreateVisitPage() {
 
       const patientId = await handleUpdateDatabase();
       if (!patientId) return;
-  
+      setLoading(true);
+      
       let visitDocId = visitId;
 
       if (visitId) {
