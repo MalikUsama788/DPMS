@@ -158,56 +158,77 @@ function CreateVisitPage() {
   }, [visitId, accessToken]);
   
   // Fetch Patients and Medicines for dropdowns
+  const fetchLimitedPatients = async (search = "") => {
+    try {
+      const res = await axios.get("/api/patients/get-limited", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        params: { search },
+      });
+      
+      setPatients(res.data.data || []);
+
+      setPatientOptions([
+        { value: "", label: "-- New Patient --" },
+        ...(res.data.data || []).map((p) => ({
+          value: p.documentId,
+          label: p.name,
+        })),
+      ]);
+    } catch (err) {
+      toast.error("Failed to load patients: " + (err.response?.data?.error || "Unknown error"));
+    }
+  };
+  const fetchMedicines = async () => {
+    setGetting(true);
+    try {
+      const res = await axios.get("/api/medicines/get", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      setMedicines(res.data.data || []);
+
+      setMedicineOptions(
+        (res.data.data || []).map((m) => ({
+          value: m.documentId,
+          label: `${m.name} (${m.medicine_type?.name})`,
+        }))
+      );
+    } catch (err) {
+      toast.error("Failed to load medicines: " + (err.response?.data?.error || "Unknown error"));
+    } finally {
+      setGetting(false);
+    }
+  };
   useEffect(() => {
-    const fetchPatients = async () => {
-      setGetting(true);
-      try {
-        const res = await axios.get("/api/patients/get", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        
-        setPatients(res.data.data || []);
-
-        setPatientOptions([
-          { value: "", label: "-- New Patient --" },
-          ...(res.data.data || []).map((p) => ({
-            value: p.documentId,
-            label: p.name,
-          })),
-        ]);
-      } catch (err) {
-        toast.error("Failed to load patients: " + (err.response?.data?.error || "Unknown error"));
-      } finally {
-        setGetting(false);
-      }
-    };
-
-    const fetchMedicines = async () => {
-      setGetting(true);
-      try {
-        const res = await axios.get("/api/medicines/get", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-
-        setMedicines(res.data.data || []);
-
-        setMedicineOptions(
-          (res.data.data || []).map((m) => ({
-            value: m.documentId,
-            label: `${m.name} (${m.medicine_type?.name})`,
-          }))
-        );
-      } catch (err) {
-        toast.error("Failed to load medicines: " + (err.response?.data?.error || "Unknown error"));
-      } finally {
-        setGetting(false);
-      }
-    };
-
-    if (accessToken) fetchPatients();
+    if (accessToken) fetchLimitedPatients();
     if (accessToken) fetchMedicines();
   }, [accessToken]);
 
+  // Medicine Search
+  const handleSearchMedicines = (inputValue) => {
+    if (!inputValue) {
+      setMedicineOptions(
+        medicines.map((m) => ({
+          value: m.documentId,
+          label: `${m.name} (${m.medicine_type?.name})`,
+        }))
+      );
+      return;
+    }
+  
+    const search = inputValue.toLowerCase();
+    const filtered = medicines.filter((m) =>
+      m.name?.toLowerCase().includes(search)
+    );
+  
+    setMedicineOptions(
+      filtered.map((m) => ({
+        value: m.documentId,
+        label: `${m.name} (${m.medicine_type?.name})`,
+      }))
+    );
+  };
+  
   // Handle Patient Selection
   const handleSelectPatient = (option) => {
     setSelectedPatient(option || null);
@@ -533,6 +554,13 @@ function CreateVisitPage() {
                   isClearable
                   className="react-select-container"
                   classNamePrefix="react-select"
+                  onInputChange={(inputValue) => {
+                    if (inputValue.trim().length === 0) {
+                      fetchLimitedPatients("");
+                    } else {
+                      fetchLimitedPatients(inputValue);
+                    }
+                  }}
                 />
               </div>
 
@@ -788,6 +816,11 @@ function CreateVisitPage() {
               isClearable
               className="react-select-container"
               classNamePrefix="react-select"
+              onInputChange={(inputValue, actionMeta) => {
+                if (actionMeta.action === "input-change") {
+                  handleSearchMedicines(inputValue);
+                }
+              }}
             />
           </div>
 
