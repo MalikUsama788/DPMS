@@ -43,21 +43,21 @@ export default function VisitsListPage() {
   }, [router]);
 
   // Get Visits List
-  useEffect(() => {
-    const fetchVisits = async () => {
-      if (!accessToken) return;
+  const fetchVisits = async () => {
+    if (!accessToken) return;
 
-      try {
-        const res = await axios.get(
-          `/api/patient-visits/list?page=${page}&pageSize=${pageSize}&patient=${searchPatient}&date=${searchDate}&cnic=${searchCnic}&phone=${searchPhone}`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        setVisits(res.data.data || []);
-        setTotal(res.data.total || 0);
-      } catch (err) {
-        toast.error("Error fetching visits: " + err.message);
-      }
-    };
+    try {
+      const res = await axios.get(
+        `/api/patient-visits/list?page=${page}&pageSize=${pageSize}&patient=${searchPatient}&date=${searchDate}&cnic=${searchCnic}&phone=${searchPhone}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      setVisits(res.data.data || []);
+      setTotal(res.data.total || 0);
+    } catch (err) {
+      toast.error("Error fetching visits: " + err.message);
+    }
+  };
+  useEffect(() => {
     fetchVisits();
   }, [page, pageSize, accessToken, searchPatient, searchDate, searchCnic, searchPhone]);
 

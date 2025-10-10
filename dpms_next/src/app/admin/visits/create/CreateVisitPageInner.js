@@ -19,6 +19,7 @@ function CreateVisitPage() {
   const [userDocumentId, setUserDocumentId] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [getting, setGetting] = useState(false);
 
   const searchParams = useSearchParams();
   const visitId = searchParams.get("visitId"); 
@@ -81,7 +82,7 @@ function CreateVisitPage() {
     const fetchVisitDetails = async () => {
       if (!visitId || !accessToken) return;
   
-      setLoading(true);
+      setGetting(true);
       try {
         const res = await axios.get(`/api/patient-visits/${visitId}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -149,7 +150,7 @@ function CreateVisitPage() {
       } catch (err) {
         toast.error("Failed to load visit details: " + (err.message || "Unknown error"));
       } finally {
-        setLoading(false);
+        setGetting(false);
       }
     };
   
@@ -159,7 +160,7 @@ function CreateVisitPage() {
   // Fetch Patients and Medicines for dropdowns
   useEffect(() => {
     const fetchPatients = async () => {
-      setLoading(true);
+      setGetting(true);
       try {
         const res = await axios.get("/api/patients/get", {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -177,12 +178,12 @@ function CreateVisitPage() {
       } catch (err) {
         toast.error("Failed to load patients: " + (err.response?.data?.error || "Unknown error"));
       } finally {
-        setLoading(false);
+        setGetting(false);
       }
     };
 
     const fetchMedicines = async () => {
-      setLoading(true);
+      setGetting(true);
       try {
         const res = await axios.get("/api/medicines/get", {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -199,7 +200,7 @@ function CreateVisitPage() {
       } catch (err) {
         toast.error("Failed to load medicines: " + (err.response?.data?.error || "Unknown error"));
       } finally {
-        setLoading(false);
+        setGetting(false);
       }
     };
 
@@ -261,7 +262,7 @@ function CreateVisitPage() {
   };
 
   // Add or Update Patient in Database
-  const handleUpdateDatabase = async () => {
+  const handleUpdateDatabase = async (showToast = true) => {
     setLoading(true);
     try {
       if (
@@ -292,7 +293,7 @@ function CreateVisitPage() {
         }, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
-        toast.success("Patient added successfully");
+        if (showToast) toast.success("Patient added successfully");
       } else {
         res = await axios.put(`/api/patients/${patient.documentId}`, {
           name: patient.name,
@@ -308,7 +309,7 @@ function CreateVisitPage() {
         }, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
-        toast.success("Patient updated successfully");
+        if (showToast) toast.success("Patient updated successfully");
       }
 
       const selected = res.data.data;
@@ -327,7 +328,7 @@ function CreateVisitPage() {
 
       return selected.documentId;
     } catch (err) {
-      toast.error("Error saving patient: " + (err.message || "Unknown error"));
+      if (showToast) toast.error("Error saving patient: " + (err.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -371,7 +372,7 @@ function CreateVisitPage() {
         return;
       }
 
-      const patientId = await handleUpdateDatabase();
+      const patientId = await handleUpdateDatabase(false);
       if (!patientId) return;
       setLoading(true);
       
@@ -478,12 +479,12 @@ function CreateVisitPage() {
   };
   
   // Check Session
-  if (checkingSession || loading) {
+  if (checkingSession || loading || getting) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center z-[999]">
         <ClipLoader size={50} color={"#3b82f6"} loading={true} />
         <p className="mt-4 text-black text-lg font-semibold">
-          {checkingSession ? "Loading data, please wait..." : "Updating data, please wait..."}
+          {checkingSession || getting ? "Loading data, please wait..." : "Updating data, please wait..."}
         </p>
       </div>
     );

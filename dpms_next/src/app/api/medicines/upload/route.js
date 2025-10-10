@@ -80,7 +80,7 @@ export async function POST(req) {
           const medId = medRes.data.data[0].documentId;
           await axios.put(
             `${STRAPI_URL}/api/medicines/${medId}`,
-            { data: { name: medName, medicine_type: typeId } },
+            { data: { name: medName, medicine_type: typeId, medicine_status: 'active' } },
             { headers: { Authorization: `Bearer ${token}` } }
           );
           updatedMeds++;
@@ -88,7 +88,7 @@ export async function POST(req) {
           // Create new medicine
           await axios.post(
             `${STRAPI_URL}/api/medicines`,
-            { data: { name: medName, medicine_type: typeId } },
+            { data: { name: medName, medicine_type: typeId, medicine_status: 'active' } },
             { headers: { Authorization: `Bearer ${token}` } }
           );
           createdMeds++;

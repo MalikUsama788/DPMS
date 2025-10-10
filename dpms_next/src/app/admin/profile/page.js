@@ -126,6 +126,7 @@ export default function ProfilePage() {
                 value={formData.location}
                 onChange={handleChange}
                 className="border p-2 rounded w-full focus:ring focus:ring-blue-300"
+                required
                 />
             </div>
           </div>

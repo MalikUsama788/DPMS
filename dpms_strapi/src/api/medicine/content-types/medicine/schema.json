@@ -25,6 +25,13 @@
     },
     "name": {
       "type": "text"
+    },
+    "medicine_status": {
+      "type": "enumeration",
+      "enum": [
+        "active",
+        "inactive"
+      ]
     }
   }
 }

@@ -29,6 +29,7 @@ export async function GET(req) {
         filters: {
           ...(name && { name: { $containsi: name } }),
           ...(type && { medicine_type: { documentId: { $eq: type } } }),
+          medicine_status: { $eq: "active" },
         },
         pagination: {
           page,

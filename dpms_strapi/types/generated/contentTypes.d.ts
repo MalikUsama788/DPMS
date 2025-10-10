@@ -460,6 +460,7 @@ export interface ApiMedicineMedicine extends Struct.CollectionTypeSchema {
       'api::medicine.medicine'
     > &
       Schema.Attribute.Private;
+    medicine_status: Schema.Attribute.Enumeration<['active', 'inactive']>;
     medicine_type: Schema.Attribute.Relation<
       'manyToOne',
       'api::medicine-type.medicine-type'

@@ -17,7 +17,7 @@ export default function AdminLayout({ children }) {
   };
 
   const links = [
-    { label: "Dashboard", href: "/admin/dashboard" },
+    { label: "Patients List", href: "/admin/dashboard" },
     { label: "Create Visit", href: "/admin/visits/create" },
     { label: "Visits List", href: "/admin/visits/list" },
     { label: "Medicines List", href: "/admin/medicines/list" },

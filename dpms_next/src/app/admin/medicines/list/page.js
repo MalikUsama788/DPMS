@@ -46,22 +46,22 @@ export default function MedicinesListPage() {
   }, [router]);
 
   // Get Medicines List
-  useEffect(() => {
-    const fetchMedicines = async () => {
-      if (!accessToken) return;
+  const fetchMedicines = async () => {
+    if (!accessToken) return;
 
-      try {
-        const res = await axios.get(
-          `/api/medicines/list?page=${page}&pageSize=${pageSize}&name=${searchName}&type=${searchType}`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        setMedicines(res.data.data || []);
-        setTotal(res.data.total || 0);
-        setTypes(res.data.types || []);
-      } catch (err) {
-        toast.error("Error fetching medicines: ", err.message);
-      }
-    };
+    try {
+      const res = await axios.get(
+        `/api/medicines/list?page=${page}&pageSize=${pageSize}&name=${searchName}&type=${searchType}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      setMedicines(res.data.data || []);
+      setTotal(res.data.total || 0);
+      setTypes(res.data.types || []);
+    } catch (err) {
+      toast.error("Error fetching medicines: ", err.message);
+    }
+  };
+  useEffect(() => {
     fetchMedicines();
   }, [page, pageSize, accessToken, searchName, searchType]);
 
@@ -81,6 +81,7 @@ export default function MedicinesListPage() {
           {
             name: medicine.name,
             medicine_type: medicine.type,
+            medicine_status: "active",
           },
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
@@ -92,6 +93,7 @@ export default function MedicinesListPage() {
           {
             name: medicine.name,
             medicine_type: medicine.type,
+            medicine_status: "active",
           },
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
@@ -103,6 +105,7 @@ export default function MedicinesListPage() {
       setShowForm(false);
       setIsEditing(false);
       setPage(1);
+      await fetchMedicines();
     } catch (err) {
       toast.error("Error saving medicine: ", err);
     } finally {
@@ -122,14 +125,37 @@ export default function MedicinesListPage() {
   };
 
   // Delete Medicine
+  // const handleDelete = async (id) => {
+  //   if (!confirm("Are you sure you want to delete this medicine?")) return;
+
+  //   setLoading(true);
+  //   try {
+  //     await axios.delete(`/api/medicines/${id}`, {
+  //       headers: { Authorization: `Bearer ${accessToken}` },
+  //     });
+  //     toast.success("Medicine deleted successfully");
+  //     setMedicines((prev) => prev.filter((m) => m.documentId !== id));
+  //     setTotal((prev) => prev - 1);
+  //   } catch (err) {
+  //     toast.error("Error deleting medicine: " + err.message)
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Update Medicine Status to Inactive
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this medicine?")) return;
 
     setLoading(true);
     try {
-      await axios.delete(`/api/medicines/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      await axios.put(
+        `/api/medicines/${id}`,
+        { medicine_status: "inactive" }, 
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
       toast.success("Medicine deleted successfully");
       setMedicines((prev) => prev.filter((m) => m.documentId !== id));
       setTotal((prev) => prev - 1);

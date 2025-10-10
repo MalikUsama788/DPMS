@@ -41,21 +41,21 @@ export default function PatientsListPage() {
   }, [router]);
 
   // Get Patients List
-  useEffect(() => {
-    const fetchPatients = async () => {
-      if (!accessToken) return;
+  const fetchPatients = async () => {
+    if (!accessToken) return;
 
-      try {
-        const res = await axios.get(
-          `/api/patients/list?page=${page}&pageSize=${pageSize}&name=${searchName}&cnic=${searchCnic}`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        setPatients(res.data.data || []);
-        setTotal(res.data.total || 0);
-      } catch (err) {
-        toast.error("Error fetching patients: " + err.message);
-      }
-    };
+    try {
+      const res = await axios.get(
+        `/api/patients/list?page=${page}&pageSize=${pageSize}&name=${searchName}&cnic=${searchCnic}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      setPatients(res.data.data || []);
+      setTotal(res.data.total || 0);
+    } catch (err) {
+      toast.error("Error fetching patients: " + err.message);
+    }
+  };
+  useEffect(() => {
     fetchPatients();
   }, [page, pageSize, accessToken, searchName, searchCnic]);
 
