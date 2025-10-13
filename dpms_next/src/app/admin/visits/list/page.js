@@ -85,6 +85,11 @@ export default function VisitsListPage() {
     }
   };
 
+  // View Visit Details
+  const handleView = (v) => {
+    router.push(`/admin/visits/${v.documentId}`);
+  };
+
   // Check Session
   if (checkingSession || loading) {
     return (
@@ -169,6 +174,7 @@ export default function VisitsListPage() {
         total={total}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onView={handleView}
         setPage={setPage}
       />
     </>

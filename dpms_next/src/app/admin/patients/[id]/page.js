@@ -142,11 +142,12 @@ export default function PatientDetailsPage() {
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-lg font-semibold">
-                    Visit on {visit.date_of_visit}
+                    Visit on: {visit.date_of_visit}
                   </h3>
                   <h3 className="text-lg font-semibold ml-6">
-                    Followup on {visit.follow_up_date}
+                  Followup on: {visit.follow_up_date || <span className="text-gray-500"> No followup date</span>}
                   </h3>
+
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => router.push(`/admin/visits/create?visitId=${visit.documentId}`)}
@@ -162,18 +163,34 @@ export default function PatientDetailsPage() {
                     </button>
                   </div>
                 </div>
-                <p><span className="font-semibold">Symptoms:</span> {visit.symptoms}</p>
-                <p><span className="font-semibold">Doctor’s Notes:</span> {visit.notes}</p>
+                
+                <span className="font-semibold">Symptoms:</span>
+                {visit.symptoms ? (
+                  <p>{visit.symptoms}</p>
+                  ) : (
+                    <p className="text-gray-500">No symptoms</p>
+                )}
+
+                <span className="font-semibold">Doctor’s Notes:</span>
+                {visit.notes ? (
+                  <p>{visit.notes}</p>
+                  ) : (
+                    <p className="text-gray-500">No doctor's notes</p>
+                )}
 
                 <div className="mt-2">
                   <span className="font-semibold">Prescription:</span>
-                  <ul className="list-disc list-inside">
-                    {(visit.patient_prescriptions || []).map((presc) => (
-                      <li key={presc.documentId}>
-                        {presc.medicine?.name} ({presc.medicine?.medicine_type?.name})
-                      </li>
-                    ))}
-                  </ul>
+                  {(visit.patient_prescriptions || []).length > 0 ? (
+                    <ul className="list-disc list-inside">
+                      {(visit.patient_prescriptions || []).map((presc) => (
+                        <li key={presc.documentId}>
+                          {presc.medicine?.name} ({presc.medicine?.medicine_type?.name})
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">No prescriptions</p>
+                  )}
                 </div>
 
                 <div className="mt-2">

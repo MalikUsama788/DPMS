@@ -1,4 +1,6 @@
+// src/components/WebcamCapture.js
 "use client";
+
 import React, { useRef, useState, useEffect } from "react";
 
 export default function WebcamCapture({ onCapture }) {
