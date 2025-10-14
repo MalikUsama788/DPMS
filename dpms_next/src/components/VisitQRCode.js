@@ -47,8 +47,7 @@ export default function VisitQRCode({ visitId, size = 80 }) {
   }
 
   return (
-    <div className="flex flex-col items-center">
-      <p className="text-xs text-gray-500 mb-1 text-center">QR Code</p>
+    <div>
       <img 
         src={qrCodeDataUrl} 
         alt="QR Code" 

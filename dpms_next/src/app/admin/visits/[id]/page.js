@@ -102,8 +102,6 @@ export default function PatientDetailsPage() {
                   margin-left: 20px;
                 }
                 .qr-code {
-                  border: 1px solid #ccc;
-                  padding: 5px;
                   margin-bottom: 5px;
                 }
                 .section { 
@@ -156,9 +154,8 @@ export default function PatientDetailsPage() {
                 </div>
                 <div class="qr-section">
                   <div class="qr-code">
-                    <img src="${qrDataUrl}" alt="QR Code" style="width: 100px; height: 100px;" />
+                    <img src="${qrDataUrl}" alt="QR Code"/>
                   </div>
-                  <div style="font-size: 10px; color: #666;">Scan for digital access</div>
                 </div>
               </div>
 
@@ -243,7 +240,7 @@ export default function PatientDetailsPage() {
         </button>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 bg-white p-3 rounded-lg border">
+          <div className="flex items-center border">
             <VisitQRCode 
               visitId={visitId}
               size={80}
