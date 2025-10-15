@@ -54,17 +54,21 @@ export default function PublicVisitPage() {
         <div className="border-t pt-4 space-y-2">
           <h2 className="text-lg font-semibold">Patient Info</h2>
           <p><strong>Name:</strong> {patient.name || "N/A"}</p>
-          <p><strong>Contact:</strong> {patient.number || "N/A"}</p>
-          <p><strong>Gender:</strong> {patient.gender || "N/A"}</p>
           <p><strong>Address:</strong> {patient.address || "N/A"}</p>
+          <p><strong>Spouse:</strong> {patient.guardian_name || "N/A"}</p>
+          <p><strong>Contact:</strong> {patient.number || "N/A"}</p>
+          <p><strong>DOB:</strong> {patient.dob || "N/A"}</p>
+          <p><strong>Gender:</strong> {patient.gender || "N/A"}</p>
+          <p><strong>NIC:</strong> {patient.nic_number || "N/A"}</p>
+          <p><strong>Other Notes:</strong> {patient.other_details || "N/A"}</p>
         </div>
 
         <div className="border-t pt-4 space-y-2">
           <h2 className="text-lg font-semibold">Medical Report</h2>
+          <p><strong>Visit on:</strong> {visit.date_of_visit || "N/A"}</p>
+          <p><strong>Followup on:</strong> {visit.follow_up_date || "N/A"}</p>
           <p><strong>Symptoms:</strong> {visit.symptoms || "N/A"}</p>
           <p><strong>Doctor Notes:</strong> {visit.notes || "N/A"}</p>
-          <p><strong>Visit Date:</strong> {visit.date_of_visit || "N/A"}</p>
-          <p><strong>Follow Up:</strong> {visit.follow_up_date || "N/A"}</p>
         </div>
 
         <div className="border-t pt-4 space-y-2">
