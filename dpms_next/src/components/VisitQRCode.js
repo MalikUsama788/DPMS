@@ -10,7 +10,7 @@ export default function VisitQRCode({ visitId, size = 80 }) {
     if (typeof window !== 'undefined') {
       return `${window.location.origin}/admin/visits/${visitId}`;
     }
-    return `/admin/visits/${visitId}`;
+    return `/visit/${visitId}`;
   };
 
   // Generate QR code

@@ -63,7 +63,7 @@ export default function PatientDetailsPage() {
     const generateQRForPrint = async () => {
       try {
         const QRCode = (await import('qrcode')).default;
-        const qrUrl = `${window.location.origin}/admin/visits/${visitId}`;
+        const qrUrl = `${window.location.origin}/visit/${visitId}`;
         const qrDataUrl = await QRCode.toDataURL(qrUrl, {
           width: 100,
           margin: 1,
