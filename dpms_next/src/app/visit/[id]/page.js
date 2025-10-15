@@ -59,23 +59,23 @@ export default function PublicVisitPage() {
         {/* Patient Info */}
         <div className="border-t pt-4 space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">Patient Info</h2>
-          <p><strong>Name:</strong> {patient.name || "N/A"}</p>
-          <p><strong>Address:</strong> {patient.address || "N/A"}</p>
-          <p><strong>Spouse:</strong> {patient.guardian_name || "N/A"}</p>
-          <p><strong>Contact:</strong> {patient.number || "N/A"}</p>
-          <p><strong>DOB:</strong> {patient.dob || "N/A"}</p>
-          <p><strong>Gender:</strong> {patient.gender || "N/A"}</p>
-          <p><strong>NIC:</strong> {patient.nic_number || "N/A"}</p>
-          <p><strong>Other Notes:</strong> {patient.other_details || "N/A"}</p>
+          <p className="text-gray-800"><strong>Name:</strong> {patient.name || "N/A"}</p>
+          <p className="text-gray-800"><strong>Address:</strong> {patient.address || "N/A"}</p>
+          <p className="text-gray-800"><strong>Spouse:</strong> {patient.guardian_name || "N/A"}</p>
+          <p className="text-gray-800"><strong>Contact:</strong> {patient.number || "N/A"}</p>
+          <p className="text-gray-800"><strong>DOB:</strong> {patient.dob || "N/A"}</p>
+          <p className="text-gray-800"><strong>Gender:</strong> {patient.gender || "N/A"}</p>
+          <p className="text-gray-800"><strong>NIC:</strong> {patient.nic_number || "N/A"}</p>
+          <p className="text-gray-800"><strong>Other Notes:</strong> {patient.other_details || "N/A"}</p>
         </div>
 
         {/* Medical Report */}
         <div className="border-t pt-4 space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">Medical Report</h2>
-          <p><strong>Visit on:</strong> {visit.date_of_visit || "N/A"}</p>
-          <p><strong>Follow-up on:</strong> {visit.follow_up_date || "N/A"}</p>
-          <p><strong>Symptoms:</strong> {visit.symptoms || "N/A"}</p>
-          <p><strong>Doctor Notes:</strong> {visit.notes || "N/A"}</p>
+          <p className="text-gray-800"><strong>Visit on:</strong> {visit.date_of_visit || "N/A"}</p>
+          <p className="text-gray-800"><strong>Follow-up on:</strong> {visit.follow_up_date || "N/A"}</p>
+          <p className="text-gray-800"><strong>Symptoms:</strong> {visit.symptoms || "N/A"}</p>
+          <p className="text-gray-800"><strong>Doctor Notes:</strong> {visit.notes || "N/A"}</p>
         </div>
 
         {/* Prescriptions */}
