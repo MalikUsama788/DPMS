@@ -47,12 +47,18 @@ export default function PublicVisitPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-white rounded-xl shadow-lg p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-center text-blue-600">Visit Details</h1>
-        <p className="text-center text-gray-600 mb-4">Visit ID: {visit.documentId || visit.id}</p>
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-6 space-y-5 border border-gray-200">
+        {/* Header */}
+        <h1 className="text-3xl font-bold text-center text-blue-600">
+          Visit Details
+        </h1>
+        <p className="text-center text-gray-600 mb-4 text-sm">
+          Visit ID: {visit.documentId || visit.id}
+        </p>
 
+        {/* Patient Info */}
         <div className="border-t pt-4 space-y-2">
-          <h2 className="text-lg font-semibold">Patient Info</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Patient Info</h2>
           <p><strong>Name:</strong> {patient.name || "N/A"}</p>
           <p><strong>Address:</strong> {patient.address || "N/A"}</p>
           <p><strong>Spouse:</strong> {patient.guardian_name || "N/A"}</p>
@@ -63,39 +69,44 @@ export default function PublicVisitPage() {
           <p><strong>Other Notes:</strong> {patient.other_details || "N/A"}</p>
         </div>
 
+        {/* Medical Report */}
         <div className="border-t pt-4 space-y-2">
-          <h2 className="text-lg font-semibold">Medical Report</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Medical Report</h2>
           <p><strong>Visit on:</strong> {visit.date_of_visit || "N/A"}</p>
-          <p><strong>Followup on:</strong> {visit.follow_up_date || "N/A"}</p>
+          <p><strong>Follow-up on:</strong> {visit.follow_up_date || "N/A"}</p>
           <p><strong>Symptoms:</strong> {visit.symptoms || "N/A"}</p>
           <p><strong>Doctor Notes:</strong> {visit.notes || "N/A"}</p>
         </div>
 
+        {/* Prescriptions */}
         <div className="border-t pt-4 space-y-2">
-          <h2 className="text-lg font-semibold">Prescriptions</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Prescriptions</h2>
           {visit.patient_prescriptions?.length ? (
-            <ul className="list-disc list-inside">
+            <ul className="list-disc list-inside space-y-1">
               {visit.patient_prescriptions.map((p) => (
-                <li key={p.documentId}>
+                <li key={p.documentId} className="text-gray-700">
                   {p.medicine?.name} ({p.medicine?.medicine_type?.name})
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">No prescriptions recorded</p>
+            <p className="text-gray-500">No prescriptions recorded.</p>
           )}
         </div>
 
+        {/* Uploaded Images */}
         {visit.patient_visit_images?.length > 0 && (
           <div className="border-t pt-4 space-y-2">
-            <h2 className="text-lg font-semibold">Uploaded Images</h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Uploaded Images
+            </h2>
             <div className="grid grid-cols-3 gap-2">
               {visit.patient_visit_images.map((img) => (
                 <img
                   key={img.documentId}
                   src={img.url}
                   alt="Visit image"
-                  className="w-full h-24 object-cover rounded border"
+                  className="w-full h-24 object-cover rounded-lg border border-gray-300"
                 />
               ))}
             </div>
