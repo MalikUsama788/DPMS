@@ -8,7 +8,7 @@ export default function VisitQRCode({ visitId, size = 80 }) {
   // Generate the QR Code URL
   const getQRCodeUrl = () => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}/admin/visits/${visitId}`;
+      return `${window.location.origin}/visit/${visitId}`;
     }
     return `/visit/${visitId}`;
   };
