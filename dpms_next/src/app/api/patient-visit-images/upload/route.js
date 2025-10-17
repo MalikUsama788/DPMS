@@ -24,40 +24,68 @@ export async function POST(req) {
     }
     const token = authHeader.replace("Bearer ", "");
 
-    const files = formData.getAll("files");
-    if (!files || files.length === 0) {
-      return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
-    }
-
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
-    const savedUrls = [];
+    const savedImages = [];
 
-    for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const ext = path.extname(file.name) || ".jpg";
-      const filename = `${uuidv4()}${ext}`;
-      const filePath = path.join(UPLOAD_DIR, filename);
+    let index = 0;
+    while (true) {
+      const original = formData.get(`files[${index}][original]`);
+      const thumbnail = formData.get(`files[${index}][thumbnail]`);
+      if (!original) break;
 
-      // Save file locally
-      await fs.writeFile(filePath, buffer);
+      // Save original image
+      const origBuffer = Buffer.from(await original.arrayBuffer());
+      const origExt = path.extname(original.name) || ".jpg";
+      const origFilename = `${uuidv4()}${origExt}`;
+      const origPath = path.join(UPLOAD_DIR, origFilename);
+      await fs.writeFile(origPath, origBuffer);
+      const origUrl = `/uploads/${origFilename}`;
 
-      // Public URL (served from /public/uploads)
-      const publicUrl = `/uploads/${filename}`;
-      savedUrls.push(publicUrl);
-      
-      const res = await axios.post(
+      // Create main image record in Strapi
+      const { data: mainImageRes } = await axios.post(
         `${STRAPI_URL}/api/patient-visit-images`,
         {
           data: {
-            url: publicUrl,
+            url: origUrl,
+            type: "image",
             patient_visit: visitId,
           },
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      const mainImageId = mainImageRes.data.documentId;
+
+      // Save thumbnail if exists
+      if (thumbnail) {
+        const thumbBuffer = Buffer.from(await thumbnail.arrayBuffer());
+        const thumbExt = path.extname(thumbnail.name) || ".jpg";
+        const thumbFilename = `thumb_${uuidv4()}${thumbExt}`;
+        const thumbPath = path.join(UPLOAD_DIR, thumbFilename);
+        await fs.writeFile(thumbPath, thumbBuffer);
+        const thumbUrl = `/uploads/${thumbFilename}`;
+
+        await axios.post(
+          `${STRAPI_URL}/api/patient-visit-images`,
+          {
+            data: {
+              url: thumbUrl,
+              type: "thumbnail",
+              patient_visit: visitId,
+              linked_image: mainImageId,
+            },
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        savedImages.push({ original: origUrl, thumbnail: thumbUrl });
+      } else {
+        savedImages.push({ original: origUrl });
+      }
+      index++;
     }
 
-    return NextResponse.json({ urls: savedUrls }, { status: 200 });
+    return NextResponse.json({ urls: savedImages }, { status: 200 });
   } catch (err) {
     return NextResponse.json(
       { error: err.response?.data?.error?.message || err.message },

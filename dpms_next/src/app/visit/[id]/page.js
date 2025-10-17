@@ -101,10 +101,12 @@ export default function PublicVisitPage() {
               Uploaded Images
             </h2>
             <div className="grid grid-cols-3 gap-2">
-              {visit.patient_visit_images.map((img) => (
+            {visit.patient_visit_images
+              .filter((img) => img.type === "thumbnail")
+              .map((thumb) => (
                 <img
-                  key={img.documentId}
-                  src={img.url}
+                  key={thumb.documentId}
+                  src={thumb.url}
                   alt="Visit image"
                   className="w-full h-24 object-cover rounded-lg border border-gray-300"
                 />

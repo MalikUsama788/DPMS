@@ -194,29 +194,53 @@ export default function PatientDetailsPage() {
                 </div>
 
                 <div className="mt-2">
-                  <span className="font-semibold">Uploaded Images:</span>
-                  {(visit.patient_visit_images || []).length > 0 ? (
-                    <div className="flex gap-2 mt-1">
-                      {visit.patient_visit_images.map((img) => (
-                         <a
-                          key={img.documentId}
-                          href={img.url}
+                <span className="font-semibold">Uploaded Images:</span>
+                {(visit.patient_visit_images || []).length > 0 ? (() => {
+                  // Separate Originals and Thumbnails
+                  const originals = visit.patient_visit_images.filter(img => img.type === "image");
+                  const thumbnails = visit.patient_visit_images.filter(img => img.type === "thumbnail");
+
+                  // Create a Map of originals by their DocumentId
+                  const originalMap = {};
+                  originals.forEach(img => {
+                    originalMap[img.documentId] = img.url;
+                  });
+
+                  // Link each Thumbnail to its Original Image
+                  const displayImages = thumbnails.map(thumb => ({
+                    thumbUrl: thumb.url,
+                    fullUrl: originalMap[thumb.linked_image] || thumb.url,
+                    id: thumb.documentId,
+                  }));
+
+                  // If no Thumbnails exist, fallback to originals only
+                  const finalImages = displayImages.length > 0
+                    ? displayImages
+                    : originals.map(img => ({ thumbUrl: img.url, fullUrl: img.url, id: img.documentId }));
+
+                  return (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {finalImages.map((img) => (
+                        <a
+                          key={img.id}
+                          href={img.fullUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block"
+                          className="relative block group"
                         >
                           <img
-                            src={img.url}
-                            alt="Image"
+                            src={img.thumbUrl}
+                            alt="Visit Thumbnail"
                             className="w-24 h-24 object-cover border rounded hover:opacity-80 cursor-pointer transition"
                           />
                         </a>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-gray-500">No images uploaded</p>
-                  )}
-                </div>
+                  );
+                })() : (
+                  <p className="text-gray-500">No images uploaded</p>
+                )}
+              </div>
               </div>
             ))}
           </div>

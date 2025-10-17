@@ -19,6 +19,16 @@
       "relation": "manyToOne",
       "target": "api::patient-visit.patient-visit",
       "inversedBy": "patient_visit_images"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "image",
+        "thumbnail"
+      ]
+    },
+    "linked_image": {
+      "type": "string"
     }
   }
 }

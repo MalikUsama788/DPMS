@@ -132,17 +132,28 @@ function CreateVisitPage() {
 
         // Prefill images
         if (data.patient_visit_images?.length > 0) {
-          setImages(
-            data.patient_visit_images.map((img) => ({
-              id: img.documentId,
-              url: img.url,
+          const originals = data.patient_visit_images.filter((img) => img.type === "image");
+          const thumbnails = data.patient_visit_images.filter((img) => img.type === "thumbnail");
+        
+          // Pair thumbnails with their originals
+          const pairedImages = originals.map((orig) => {
+            const thumb = thumbnails.find((t) => t.linked_image === orig.documentId);
+            return {
+              id: orig.documentId,
+              original: orig.url,
+              thumbnail: thumb ? thumb.url : null,
+              thumbnailId: thumb ? thumb.documentId : null,
               isExisting: true,
-            }))
-          );
+            };
+          });
+        
+          setImages(pairedImages);
+        
           setOriginalImages(
-            data.patient_visit_images.map((img) => ({
-              id: img.documentId,
-              url: img.url,
+            pairedImages.map((p) => ({
+              id: p.id,
+              url: p.original,
+              thumbnailId: p.thumbnailId,
             }))
           );
         }
@@ -358,29 +369,38 @@ function CreateVisitPage() {
   // Handle Image Upload
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    const options = {
+    const maxImages = 5;
+
+    if (images.length + files.length > maxImages) {
+      toast.info(`Maximum ${maxImages} images allowed. Please remove some first.`);
+      e.target.value = "";
+      return;
+    }
+
+    const thumbOptions = {
       maxSizeMB: 0.2,
       maxWidthOrHeight: 400,
       useWebWorker: true,
     };
 
-    const compressedImages = [];
+    const newUploads = [];
+
     for (let file of files) {
       try {
-        const compressed = await imageCompression(file, options);
-        compressed.name = `thumb_${file.name}`;
-        compressedImages.push(compressed);
+        const thumb = await imageCompression(file, thumbOptions);
+        const thumbUrl = URL.createObjectURL(thumb);
+
+        newUploads.push({
+          original: file,
+          thumbnail: thumbUrl,
+        });
       } catch (err) {
         toast.error("Image Compression failed: " + err.message);
         compressedImages.push(file);
       }
     }
 
-    if (images.length + compressedImages.length <= 5) {
-      setImages((prev) => [...prev, ...compressedImages]);
-    } else {
-      toast.info("Max 5 images allowed. No images were added.");
-    }
+    setImages((prev) => [...prev, ...newUploads]);
   };
 
   // Submit
@@ -457,8 +477,31 @@ function CreateVisitPage() {
       // Upload images
       if (images.length > 0) {
         const formData = new FormData();
-        const newFiles = images.filter((img) => !(img.isExisting)); 
-        newFiles.forEach((file) => formData.append("files", file));
+        const newFiles = images.filter((img) => !img.isExisting); 
+
+        for (const [index, img] of newFiles.entries()) {
+          // Append original file
+          if (img.original instanceof File) {
+            formData.append(`files[${index}][original]`, img.original);
+          }
+
+          // Handle thumbnail
+          if (img.thumbnail) {
+            if (img.thumbnail instanceof File) {
+              formData.append(`files[${index}][thumbnail]`, img.thumbnail);
+            } else if (typeof img.thumbnail === "string" && img.thumbnail.startsWith("blob:")) {
+              try {
+                const response = await fetch(img.thumbnail);
+                const blob = await response.blob();
+                const thumbFile = new File([blob], `thumbnail_${Date.now()}.png`, { type: "image/png" });
+                formData.append(`files[${index}][thumbnail]`, thumbFile);
+              } catch (err) {
+                toast.error("Thumbnail blob fetch failed:", err);
+              }
+            }
+          }
+        }
+        
         formData.append("visit", visitDocId);
   
         if (newFiles.length > 0) {
@@ -472,7 +515,7 @@ function CreateVisitPage() {
       if (visitId) {
         const existingImageUrls = images
           .filter((img) => img.isExisting)
-          .map((img) => img.url);
+          .map((img) => img.original);
       
         // Find which images were removed
         const removedImages = originalImages.filter(
@@ -481,7 +524,7 @@ function CreateVisitPage() {
       
         for (let removed of removedImages) {
           try {
-            await axios.delete(`/api/patient-visit-images/${removed.id}`, {
+            await axios.delete(`/api/patient-visit-images/${removed.thumbnailId}`, {
               headers: { Authorization: `Bearer ${accessToken}` },
             });
           } catch (err) {
@@ -765,10 +808,21 @@ function CreateVisitPage() {
           </div>
           <div className="flex flex-wrap gap-4">
             {images.map((img, idx) => {
-              const imageUrl = 
-                img instanceof File || img instanceof Blob
-                  ? URL.createObjectURL(img)
-                  : img.url;
+              const thumbSrc =
+                img.thumbnail instanceof File || img.thumbnail instanceof Blob
+                  ? URL.createObjectURL(img.thumbnail)
+                  : typeof img.thumbnail === "string"
+                  ? img.thumbnail
+                  : null;
+        
+              const origSrc =
+                img.original instanceof File || img.original instanceof Blob
+                  ? URL.createObjectURL(img.original)
+                  : typeof img.original === "string"
+                  ? img.original
+                  : null;
+          
+              const displaySrc = thumbSrc || origSrc;
 
               return (
                 <div
@@ -776,15 +830,14 @@ function CreateVisitPage() {
                   className="relative"
                 >
                   <a
-                    key={img.documentId}
-                    href={img.url}
+                    href={origSrc || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block"
                   >
                     {/* Thumbnail Preview */}
                     <img
-                      src={imageUrl}
+                      src={displaySrc}
                       alt={`Preview ${idx + 1}`}
                       className="w-24 h-24 object-cover border rounded hover:opacity-80 cursor-pointer transition"
                     />

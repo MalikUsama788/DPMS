@@ -525,6 +525,7 @@ export interface ApiPatientVisitImagePatientVisitImage
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    linked_image: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -536,6 +537,7 @@ export interface ApiPatientVisitImagePatientVisitImage
       'api::patient-visit.patient-visit'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.Enumeration<['image', 'thumbnail']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

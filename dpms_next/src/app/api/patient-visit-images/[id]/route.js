@@ -79,10 +79,39 @@ export async function DELETE(req, { params }) {
     }
     const token = authHeader.replace("Bearer ", "");
 
-    await axios.delete(`${STRAPI_URL}/api/patient-visit-images/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const thumbRes = await axios.get(
+      `${STRAPI_URL}/api/patient-visit-images/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
+    const thumbData = thumbRes.data?.data;
+    if (!thumbData) {
+      return NextResponse.json(
+        { error: "Thumbnail not found" },
+        { status: 404 }
+      );
+    }
+
+    const linkedImageId = thumbData.linked_image;
+    const deletePromises = [];
+
+    deletePromises.push(
+      axios.delete(`${STRAPI_URL}/api/patient-visit-images/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    );
+
+    if (linkedImageId) {
+      deletePromises.push(
+        axios.delete(`${STRAPI_URL}/api/patient-visit-images/${linkedImageId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
+    }
+
+    await Promise.all(deletePromises);
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json(
