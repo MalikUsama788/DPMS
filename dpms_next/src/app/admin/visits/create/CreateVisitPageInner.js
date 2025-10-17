@@ -719,7 +719,7 @@ function CreateVisitPage() {
                 value={visit.symptoms}
                 onChange={(e) => setVisit({ ...visit, symptoms: e.target.value })}
                 className="w-full border p-2 rounded"
-                rows={3}
+                rows={12}
               />
             </div>
           </div>
@@ -733,7 +733,7 @@ function CreateVisitPage() {
                 value={visit.notes}
                 onChange={(e) => setVisit({ ...visit, notes: e.target.value })}
                 className="w-full border p-2 rounded"
-                rows={3}
+                rows={12}
                 required
               />
             </div>
